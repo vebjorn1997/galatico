@@ -35,5 +35,3 @@ class Graphic:
 
 Gold: Final = ("Gold", int)
 """Amount of gold."""
-
-Text: Final = ("Text", str)
