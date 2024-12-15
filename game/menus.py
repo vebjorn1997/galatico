@@ -64,7 +64,6 @@ class ListMenu(State):
             case tcod.event.Quit():
                 raise SystemExit
             case tcod.event.KeyDown(sym=sym) if sym in DIRECTION_KEYS:
-                # print(DIRECTION_KEYS[sym])
                 dy, dx = DIRECTION_KEYS[sym]
                 if dx != 0 or dy == 0:
                     return self.activate_selected(event)
