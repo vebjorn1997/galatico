@@ -8,6 +8,7 @@ import tcod.tileset
 from game import g
 import game.states
 import game.world_tools
+import game.state_tools
 
 
 def main():
@@ -20,8 +21,7 @@ def main():
     tcod.tileset.procedural_block_elements(tileset=tileset)
 
     g.console = tcod.console.Console(50, 35, order="F")
-    state = game.states.InGame()
-    g.world = game.world_tools.new_world()
+    g.states = [game.states.MainMenu()]
 
     with tcod.context.new(
         columns=g.console.width,
@@ -29,13 +29,9 @@ def main():
         tileset=tileset,
     ) as g.context:
         while True:
-            g.console.clear()
-            state.on_draw(g.console)
-            g.context.present(g.console)
+            game.state_tools.main_draw()
             for event in tcod.event.wait():
-                state.on_event(event)
-                # if isinstance(event, tcod.event.Quit):
-                #     raise SystemExit()
+                game.state_tools.apply_state_result(g.states[-1].on_event(event))
 
 
 if __name__ == "__main__":
