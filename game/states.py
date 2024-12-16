@@ -8,7 +8,7 @@ import tcod.event
 from tcod.event import KeySym
 
 from game import g
-from game.components import Gold, Graphic, Position
+from game.components import Gold, Graphic, Position, StarSystem, StarSystemEconomy
 from game.constants import DIRECTION_KEYS
 from game.tags import IsItem, IsPlayer
 from game import menus
@@ -52,6 +52,7 @@ class InGame:
         if text := g.world[None].components.get(("Text", str)):
             console.print(x=0, y=console.height - 1, string=text, fg=(255, 255, 255), bg=(0, 0, 0))
 
+# For record keeping, not used
 class MainMenu(menus.ListMenu):
     """Main/escape menu."""
 
@@ -69,8 +70,8 @@ class MainMenu(menus.ListMenu):
         super().__init__(
             items=tuple(items),
             selected=0,
-            x=5,
-            y=5,
+            x=1,
+            y=1,
         )
 
     @staticmethod
@@ -81,10 +82,52 @@ class MainMenu(menus.ListMenu):
     @staticmethod
     def new_game() -> StateResult:
         """Begin a new game."""
-        g.world = world_tools.new_world()
-        return Reset(InGame())
+        g.world = world_tools.new_universe()
+        return Reset(DisplayAllSystems())
 
     @staticmethod
     def quit() -> StateResult:
         """Close the program."""
         raise SystemExit
+
+class DisplayAllSystems(menus.ListMenu):
+    """All systems menu."""
+
+    __slots__ = ()
+
+    def __init__(self) -> None:
+        """Initialize the all systems menu."""
+        systems = g.world.Q.all_of(components=[StarSystem])
+        items = [
+            menus.SelectItem(system.components[StarSystem].name, self.on_select(system)) for system in systems
+        ]
+
+        super().__init__(
+            items=tuple(items),
+            selected=0,
+            x=1,
+            y=1,
+        )
+
+    def on_select(self, system: StarSystem) -> StateResult:
+        """Handle selection of a system."""
+        def callback() -> StateResult:
+            return Push(DisplaySystemDetails(system))
+        return callback
+
+class DisplaySystemDetails(menus.ListMenu):
+    """Display system details."""
+
+    def __init__(self, system: StarSystem) -> None:
+        """Initialize the system details menu."""
+        items = [
+            menus.SelectItem(f"Name: {system.components[StarSystem].name}", None),
+            menus.SelectItem(f"Construction Materials: {system.components[StarSystemEconomy].construction_materials}", None),
+            menus.SelectItem(f"Food Stuff: {system.components[StarSystemEconomy].food_stuff}", None),
+        ]
+        super().__init__(
+            items=tuple(items),
+            selected=0,
+            x=1,
+            y=1,
+        )
