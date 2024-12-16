@@ -121,9 +121,9 @@ class DisplaySystemDetails(menus.ListMenu):
     def __init__(self, system: StarSystem) -> None:
         """Initialize the system details menu."""
         items = [
-            menus.SelectItem(f"Name: {system.components[StarSystem].name}", None),
-            menus.SelectItem(f"Construction Materials: {system.components[StarSystemEconomy].construction_materials}", None),
-            menus.SelectItem(f"Food Stuff: {system.components[StarSystemEconomy].food_stuff}", None),
+            menus.SelectItem(f"Name: {system.components[StarSystem].name}", self.on_cancel),
+            menus.SelectItem(f"Construction Materials: {system.components[StarSystemEconomy].construction_materials}", self.on_cancel),
+            menus.SelectItem(f"Food Stuff: {system.components[StarSystemEconomy].food_stuff}", self.on_cancel),
         ]
         super().__init__(
             items=tuple(items),
