@@ -83,7 +83,7 @@ class ListMenu(EndRound):
             case tcod.event.MouseButtonUp(button=tcod.event.MouseButton.RIGHT):
                 return self.on_cancel()
             case tcod.event.KeyDown(sym=KeySym.SPACE):
-                return world_tools.end_round(g.world)
+                return super().on_event(event)
             case _:
                 return self.activate_selected(event)
 
