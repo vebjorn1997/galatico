@@ -5,6 +5,11 @@ from typing import Protocol, TypeAlias
 import attrs
 import tcod.console
 import tcod.event
+from tcod.event import KeySym
+
+from game import g
+from game.world_tools import end_round
+
 
 class State(Protocol):
     """An abstract game state."""
@@ -37,3 +42,16 @@ class Reset:
 
 StateResult: TypeAlias = "Push | Pop | Reset | None"
 """Union of state results."""
+
+@attrs.define()
+class EndRound(State):
+    """End the round."""
+
+    def on_event(self, event: tcod.event.Event) -> StateResult:
+        """Handle events for the end round state."""
+        match event:
+            case tcod.event.KeyDown(sym=KeySym.SPACE):
+                return end_round(g.world)
+    
+    def on_draw(self, console: tcod.console.Console) -> None:
+        pass

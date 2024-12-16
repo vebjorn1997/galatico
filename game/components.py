@@ -39,13 +39,11 @@ class StarSystem:
 
     name: str
 
-@attrs.define(frozen=True)
 class StarSystemEconomy:
     """A star system's economy."""
 
     construction_materials: int # Everything from minerals to synthetic materials
     food_stuff: int
-
 
 Gold: Final = ("Gold", int)
 """Amount of gold."""

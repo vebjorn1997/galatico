@@ -10,10 +10,11 @@ import tcod.console
 import tcod.event
 from tcod.event import KeySym
 
+from game import g
 import game.state_tools
 from game.constants import DIRECTION_KEYS
-from game.state import Pop, State, StateResult
-
+from game.state import Pop, StateResult, EndRound
+from game import world_tools
 
 class MenuItem(Protocol):
     """Menu item protocol."""
@@ -50,7 +51,7 @@ class SelectItem(MenuItem):
 
 
 @attrs.define()
-class ListMenu(State):
+class ListMenu(EndRound):
     """Simple list menu state."""
 
     items: tuple[MenuItem, ...]
@@ -81,6 +82,8 @@ class ListMenu(State):
                 return self.on_cancel()
             case tcod.event.MouseButtonUp(button=tcod.event.MouseButton.RIGHT):
                 return self.on_cancel()
+            case tcod.event.KeyDown(sym=KeySym.SPACE):
+                return world_tools.end_round(g.world)
             case _:
                 return self.activate_selected(event)
 

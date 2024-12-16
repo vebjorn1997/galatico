@@ -10,7 +10,7 @@ from tcod.event import KeySym
 from game import g
 from game.components import Gold, Graphic, Position, StarSystem, StarSystemEconomy
 from game.constants import DIRECTION_KEYS
-from game.tags import IsItem, IsPlayer
+from game.tags import IsItem, IsPlayer, IsStarSystem
 from game import menus
 from game.state import StateResult, Reset, Push
 from game import world_tools
@@ -83,12 +83,35 @@ class MainMenu(menus.ListMenu):
     def new_game() -> StateResult:
         """Begin a new game."""
         g.world = world_tools.new_universe()
-        return Reset(DisplayAllSystems())
+        return Reset(Dashboard())
 
     @staticmethod
     def quit() -> StateResult:
         """Close the program."""
         raise SystemExit
+
+@attrs.define()
+class Dashboard(menus.ListMenu):
+    """Dashboard menu."""
+
+    __slots__ = ()
+
+    def __init__(self) -> None:
+        """Initialize the dashboard menu."""
+        items = [
+            menus.SelectItem("View All Systems", self.on_select),
+        ]
+        super().__init__(
+            items=tuple(items),
+            selected=0,
+            x=1,
+            y=1,
+        )
+
+    @staticmethod
+    def on_select() -> StateResult:
+        """Handle selection of a system."""
+        return Push(DisplayAllSystems())
 
 class DisplayAllSystems(menus.ListMenu):
     """All systems menu."""
@@ -97,7 +120,7 @@ class DisplayAllSystems(menus.ListMenu):
 
     def __init__(self) -> None:
         """Initialize the all systems menu."""
-        systems = g.world.Q.all_of(components=[StarSystem])
+        systems = g.world.Q.all_of(tags=[IsStarSystem])
         items = [
             menus.SelectItem(system.components[StarSystem].name, self.on_select(system)) for system in systems
         ]

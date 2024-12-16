@@ -3,7 +3,7 @@ from __future__ import annotations
 from random import Random
 from tcod.ecs import Registry
 from game.components import Gold, Graphic, Position
-from game.tags import IsActor, IsItem, IsPlayer
+from game.tags import IsActor, IsItem, IsPlayer, IsStarSystem
 
 """Functions for working with worlds."""
 
@@ -21,9 +21,17 @@ def new_universe() -> Registry:
     for i in range(10):
         system = universe[object()]
         system.components[StarSystem] = StarSystem(name=f"Star System {i}")
-        system.components[StarSystemEconomy] = StarSystemEconomy(construction_materials=10, food_stuff=10)
+        system.components[StarSystemEconomy] = StarSystemEconomy()
+        system.components[StarSystemEconomy].construction_materials = 10
+        system.components[StarSystemEconomy].food_stuff = 10
+        system.tags |= {IsStarSystem}
 
     return universe
+
+def end_round(world: Registry) -> None:
+    """End the round."""
+    for system in world.Q.all_of(tags=[IsStarSystem]):
+        system.components[StarSystemEconomy].construction_materials += 10
 
 # For record keeping, not used
 def new_world() -> Registry:
